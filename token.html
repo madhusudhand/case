@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>el.</title>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+      .container {
+        width: 100%;
+        padding: 2rem;
+      }
+      input {
+        width: 100%;
+        padding: 8px 12px;
+        margin: 8px 0;
+      }
+      button {
+        padding: 8px 40px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <form action="#" name="tokenForm">
+        <label>Token</label>
+        <input type="text" id="token" placeholder="Enter TOTP token">
+        <button type="button" id="register">Register</button>
+      </form>
+    </div>
+
+    <script>
+      const ipcRenderer = require('electron').ipcRenderer;
+      document.getElementById('register').addEventListener('click', () => {
+        console.log('clicked')
+        let token = document.getElementById("token").value;
+        console.log(token)
+        if (token) {
+          ipcRenderer.send('token:registration', token)
+        }
+      })
+    </script>
+  </body>
+</html>
