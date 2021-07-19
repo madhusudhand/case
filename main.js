@@ -7,17 +7,9 @@ const store = new Store();
 let tray = null;
 let tokenWindow;
 app.whenReady().then(() => {
-  tray = new Tray(path.join(__dirname,'el.png'))
-  const contextMenu = Menu.buildFromTemplate([
-    { label: 'Get code', type: 'normal', click: getCode },
-    { label: 'Register Token', type: 'normal', click: setToken},
-    { label: 'Reset', type: 'normal' },
-    { label: '', type: 'separator'},
-    { label: 'About el.', type: 'normal', click: aboutEl },
-    { label: 'Quit el.', type: 'normal', click: quit }
-  ])
+  tray = new Tray(path.join(__dirname,'tray-icon.png'))
   tray.setToolTip('el.')
-  tray.setContextMenu(contextMenu)
+  tray.setContextMenu(getTrayMenu())
 })
 
 app.on('window-all-closed', () => {
@@ -32,9 +24,25 @@ app.on('activate', () => {
   }
 })
 
-function getCode() {
+function getTrayMenu() {
+  const apps = store.get('apps') || []
+  const contextMenu = Menu.buildFromTemplate([
+    ...apps.map(app => ({
+      label: `Get ${app} token`, type: 'normal', click: () => getCode(app)
+    })),
+    { label: '', type: 'separator'},
+    { label: 'Register', type: 'normal', click: register},
+    { label: 'Unregister', type: 'normal', click: unregister},
+    { label: '', type: 'separator'},
+    { label: 'About', type: 'normal', click: about },
+    { label: 'Quit', type: 'normal', click: quit }
+  ])
+  return contextMenu
+}
+
+function getCode(appName) {
   try {
-    const token = store.get('token');
+    const token = store.get(appName);
     if (!token) {
       clipboard.writeText('totp token not registered!')
       return;
@@ -46,16 +54,34 @@ function getCode() {
   }
 }
 
-function setToken() {
+function register() {
   tokenWindow = new BrowserWindow({ 
-    height:200, width:400, modal: true, show: false, maximizable: false, resizable: false,
+    height:300, width:400, modal: true, show: false, maximizable: false, resizable: false,
     webPreferences: {
       nodeIntegration: true
     },
     title: 'el.'
   })
 
-  tokenWindow.loadFile('token.html')
+  tokenWindow.loadFile('register.html')
+  tokenWindow.once('ready-to-show', () => {
+    tokenWindow.show()
+  })
+  tokenWindow.on('closed', () => {
+    tokenWindow = null;
+  });
+}
+
+function unregister() {
+  tokenWindow = new BrowserWindow({ 
+    height:300, width:400, modal: true, show: false, maximizable: false, resizable: false,
+    webPreferences: {
+      nodeIntegration: true
+    },
+    title: 'el.'
+  })
+
+  tokenWindow.loadFile('unregister.html')
   tokenWindow.once('ready-to-show', () => {
     tokenWindow.show()
   })
@@ -68,18 +94,37 @@ function quit() {
   app.quit()
 }
 
-ipcMain.on('token:registration', function (event, token) {
+ipcMain.on('token:registration', function (event, appName, token) {
   try {
     if (tokenWindow) {
       tokenWindow.close()
     }
-    store.set('token', token)
-  } catch (error) {
-    
+    const apps = store.get('apps')
+    store.set('apps', (apps||[]).concat(appName))
+    store.set(appName, token)
+
+    tray.setContextMenu(getTrayMenu())
+  } catch (ex) {
+    console.log(ex)    
   }
 });
 
-function aboutEl() {
+ipcMain.on('token:unregistration', function (event, appName) {
+  try {
+    if (tokenWindow) {
+      tokenWindow.close()
+    }
+    const apps = store.get('apps')
+    store.set('apps', (apps||[]).filter(app => app !== appName))
+    store.delete(appName)
+
+    tray.setContextMenu(getTrayMenu())
+  } catch (ex) {
+    console.log(ex)    
+  }
+});
+
+function about() {
   let aboutWin = new BrowserWindow({ 
     height:200, width:400, modal: true, show: false, maximizable: false, resizable: false,
     title: 'el.'

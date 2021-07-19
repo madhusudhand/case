@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Register Token</title>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+      .container {
+        width: 100%;
+        padding: 2rem;
+      }
+      input {
+        width: 100%;
+        padding: 8px 12px;
+        margin: 8px 0;
+      }
+      button {
+        padding: 8px 40px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <form action="#" name="tokenForm">
+        <input type="text" id="appName" placeholder="App name">
+        <input type="text" id="token" placeholder="App token">
+        <button type="button" id="register">Register</button>
+      </form>
+    </div>
+
+    <script>
+      const ipcRenderer = require('electron').ipcRenderer;
+      document.getElementById('register').addEventListener('click', () => {
+        let appName = document.getElementById("appName").value;
+        let token = document.getElementById("token").value;
+        if (appName && token) {
+          ipcRenderer.send('token:registration', appName, token)
+        }
+      })
+    </script>
+  </body>
+</html>

@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta charset="UTF-8">
-    <title>el.</title>
+    <title>Unregister</title>
     <style>
       * {
         box-sizing: border-box;
@@ -24,20 +24,17 @@
   <body>
     <div class="container">
       <form action="#" name="tokenForm">
-        <label>Token</label>
-        <input type="text" id="token" placeholder="Enter TOTP token">
-        <button type="button" id="register">Register</button>
+        <input type="text" id="appName" placeholder="App name">
+        <button type="button" id="unregister">Unregister</button>
       </form>
     </div>
 
     <script>
       const ipcRenderer = require('electron').ipcRenderer;
-      document.getElementById('register').addEventListener('click', () => {
-        console.log('clicked')
-        let token = document.getElementById("token").value;
-        console.log(token)
-        if (token) {
-          ipcRenderer.send('token:registration', token)
+      document.getElementById('unregister').addEventListener('click', () => {
+        let appName = document.getElementById("appName").value;
+        if (appName) {
+          ipcRenderer.send('token:unregistration', appName)
         }
       })
     </script>
