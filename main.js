@@ -1,4 +1,4 @@
-const { app, BrowserWindow, Tray, Menu, clipboard, ipcMain } = require('electron')
+const { app, BrowserWindow, Tray, Menu, clipboard, ipcMain, nativeTheme } = require('electron')
 const totp = require('totp-generator');
 const path = require('path');
 const Store = require('electron-store');
@@ -7,8 +7,9 @@ const store = new Store();
 let tray = null;
 let tokenWindow;
 app.whenReady().then(() => {
-  tray = new Tray(path.join(__dirname,'tray-icon.png'))
-  tray.setToolTip('el.')
+  const theme = nativeTheme.shouldUseDarkColors ? 'dark' : 'light'
+  tray = new Tray(path.join(__dirname,`tray-${theme}.png`))
+  tray.setToolTip('CASE')
   tray.setContextMenu(getTrayMenu())
 })
 
@@ -60,7 +61,7 @@ function register() {
     webPreferences: {
       nodeIntegration: true
     },
-    title: 'el.'
+    title: 'CASE'
   })
 
   tokenWindow.loadFile('register.html')
@@ -78,7 +79,7 @@ function unregister() {
     webPreferences: {
       nodeIntegration: true
     },
-    title: 'el.'
+    title: 'CASE'
   })
 
   tokenWindow.loadFile('unregister.html')
@@ -127,7 +128,7 @@ ipcMain.on('token:unregistration', function (event, appName) {
 function about() {
   let aboutWin = new BrowserWindow({ 
     height:200, width:400, modal: true, show: false, maximizable: false, resizable: false,
-    title: 'el.'
+    title: 'CASE'
   })
 
   aboutWin.loadFile('about.html')
