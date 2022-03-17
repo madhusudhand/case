@@ -21,7 +21,7 @@ app.on('window-all-closed', () => {
 
 app.on('activate', () => {
   if (BrowserWindow.getAllWindows().length === 0) {
-    createWindow()
+    // do nothing
   }
 })
 
@@ -29,7 +29,7 @@ function getTrayMenu() {
   const apps = store.get('apps') || []
   const contextMenu = Menu.buildFromTemplate([
     ...apps.map(app => ({
-      label: `Get ${app} token`, type: 'normal', click: () => getCode(app)
+      label: `App: ${app}`, type: 'normal', click: () => getCode(app)
     })),
     { label: '', type: 'separator'},
     { label: 'Register', type: 'normal', click: register},

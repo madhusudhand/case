@@ -12,11 +12,20 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "electron": "^11.3.0",
-    "electron-builder": "^22.9.1"
+    "electron": "17.1.2",
+    "electron-builder": "22.14.13"
   },
   "dependencies": {
     "electron-store": "^7.0.2",
     "totp-generator": "^0.0.8"
+  },
+  "build": {
+    "appId": "com.electron.md.case",
+    "productName": "CASE",
+    "dmg": {
+      "window": {
+        "width": "540"
+      }
+    }
   }
 }
