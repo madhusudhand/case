@@ -11,9 +11,11 @@ app.whenReady().then(() => {
   tray = new Tray(path.join(__dirname,`tray-${theme}.png`))
   tray.setToolTip('CASE')
   tray.setContextMenu(getTrayMenu())
+  app.dock.hide()
 })
 
 app.on('window-all-closed', () => {
+  app.dock.hide()
   if (process.platform !== 'darwin') {
     app.quit()
   }
@@ -59,7 +61,8 @@ function register() {
   tokenWindow = new BrowserWindow({ 
     height:300, width:400, modal: true, show: false, maximizable: false, resizable: false,
     webPreferences: {
-      nodeIntegration: true
+      nodeIntegration: true,
+      contextIsolation: false,
     },
     title: 'CASE'
   })

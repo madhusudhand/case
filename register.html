@@ -37,6 +37,8 @@
         let token = document.getElementById("token").value;
         if (appName && token) {
           ipcRenderer.send('token:registration', appName, token)
+        } else {
+          alert('Enter a valid app name and token.')
         }
       })
     </script>
